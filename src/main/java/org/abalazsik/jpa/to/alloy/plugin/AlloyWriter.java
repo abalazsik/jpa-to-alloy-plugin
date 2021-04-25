@@ -14,7 +14,7 @@ import java.util.StringJoiner;
 public class AlloyWriter {
 	
 	public static void printSig(PrintWriter writer, String name, String parent, boolean isAbstract, List<Field> variables) {
-		StringJoiner joiner = new StringJoiner(",\n");
+		StringJoiner joiner = new StringJoiner(",\n\t");
 
 		for (Field variable : variables) {
 			
@@ -45,9 +45,9 @@ public class AlloyWriter {
 		}
 		
 		writer
-				.append(" { ")
+				.append(" {\n\t")
 				.append(joiner.toString())
-				.append(" }\n");
+				.append(" \n}\n");
 	}
 	
 	public static void printLineComment(PrintWriter writer, String line) {

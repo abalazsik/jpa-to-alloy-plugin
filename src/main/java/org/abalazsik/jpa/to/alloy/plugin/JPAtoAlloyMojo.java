@@ -44,31 +44,23 @@ public class JPAtoAlloyMojo extends AbstractMojo {
 	@Parameter(name = "outputFile", required = true)
 	private String outputFile;
 
-	private boolean fieldAnnotations = true;
-
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
-			//project.getCompileSourceRoots();
 
 			File file = new File(project.getBuild().getOutputDirectory());
 
 			URL[] projectClasspath = new URL[]{file.toURI().toURL()};
 
-			for (URL url : projectClasspath) {
-				this.getLog().debug(url.toString());
-			}
-
 			URLClassLoader projectClassloader = new URLClassLoader(projectClasspath,
 					getClass().getClassLoader());
 
 			File dir = new File(project.getBuild().getOutputDirectory() + "/" + pkg.replace(".", "/"));
-
+			
 			File output = new File(
-					project.getBuild().getOutputDirectory() + "/" + (outputFile.endsWith(".als") ? outputFile : outputFile + ".als")
+					new File(project.getBuild().getOutputDirectory()).getParent() 
+						+ "/" + (outputFile.endsWith(".als") ? outputFile : outputFile + ".als")
 			);
-
-			this.getLog().info(output.getAbsolutePath());
 
 			PrintWriter writer = new PrintWriter(output);
 
@@ -192,13 +184,10 @@ public class JPAtoAlloyMojo extends AbstractMojo {
 	}
 	
 	private Field searchRelation(Class clazz, String mappedBy) {
-		this.getLog().info("searching for " + mappedBy + " in " + clazz.getCanonicalName());
 
 		for (Field field : clazz.getDeclaredFields()) {
 			UsableType usableType = ReflectionsUtil.getUsableType(field);
-
-			this.getLog().info("Found field: " + usableType.clazz.getCanonicalName());
-
+			
 			if (field.isAnnotationPresent(OneToOne.class) && mappedBy.equals(field.getAnnotation(OneToOne.class).mappedBy())) {
 				return field;
 			} else if (field.isAnnotationPresent(OneToMany.class) && mappedBy.equals(field.getAnnotation(OneToMany.class).mappedBy())) {
